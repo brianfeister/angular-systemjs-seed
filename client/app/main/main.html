@@ -1,21 +1,39 @@
-<div ng-include="'components/navbar/navbar.html'"></div>
+<md-sidenav hide-gt-md layout="column" flex-gt-md="20" class="md-sidenav-right md-whiteframe-z2" md-component-id="right" md-is-locked-open="$media('gt-md')">
+  <md-toolbar ng-click="toggleSidenav('right')">
+    <button hide-gt-sm class="menuBtn">
+      <span class="visually-hidden">Menu</span>
+    </button>
+    <h1>Scala EXP</h1>
+  </md-toolbar>
+  <div ng-include="'components/navbar/navbar.html'"></div>
+</md-sidenav>
+<md-content layout="column" flex-gt-md="20" class="md-sidenav-left md-whiteframe" md-component-id="left" md-is-locked-open="$media('gt-md')">
+  <md-toolbar hide-lt-md ng-click="toggleSidenav('right')">
+    <button hide-gt-sm class="menuBtn">
+      <span class="visually-hidden">Menu</span>
+    </button>
+    <h1>Scala EXP</h1>
+  </md-toolbar>
+  <div ng-include="'components/navbar/navbar.html'"></div>
+</md-content>
+<md-content layout="column" flex="100" flex-gt-md="80">
+  <md-toolbar hide-gt-md ng-click="toggleSidenav('right')">
+    <button hide-gt-md class="menuBtn">
+      <span class="visually-hidden">Menu</span>
+    </button>
+    <h1>Scala EXP</h1>
+  </md-toolbar>
+  <header layout-fill class="hero-unit" id="banner">
+      <h1>'Allo, 'Allo!</h1>
+      <p class="lead">Kick-start your next web app with Angular Fullstack</p>
+      <img src="assets/images/yeoman.png" alt="I'm Yeoman">
+  </header>
 
-<header class="hero-unit" id="banner">
-  <div class="container">
-    <h1>'Allo, 'Allo!</h1>
-    <p class="lead">Kick-start your next web app with Angular Fullstack</p>
-    <img src="assets/images/yeoman.png" alt="I'm Yeoman">
-  </div>
-</header>
-
-<div class="container">
-  <div class="row">
-    <div class="col-lg-12">
-      <h1 class="page-header">Features:</h1>
-      <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="thing in awesomeThings">
-        <li><a href="#" tooltip="{{thing.info}}">{{thing.name}}<button type="button" class="close" ng-click="deleteThing(thing)">&times;</button></a></li>
-      </ul>
-    </div>
+  <div class="col-lg-12">
+    <h1 class="page-header">Features:</h1>
+    <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="thing in awesomeThings">
+      <li><a href="#" tooltip="{{thing.info}}">{{thing.name}}<button type="button" class="close" ng-click="deleteThing(thing)">&times;</button></a></li>
+    </ul>
   </div>
 
   <form class="thing-form">
@@ -27,7 +45,6 @@
       </span>
     </p>
   </form>
-</div>
 
 <footer class="footer">
   <div class="container">
@@ -36,3 +53,4 @@
          <a href="https://github.com/DaftMonk/generator-angular-fullstack/issues?state=open">Issues</a></p>
   </div>
 </footer>
+</md-content>
