@@ -34,6 +34,14 @@ module.exports = function (grunt) {
       client: require('./bower.json').appPath || 'client',
       dist: 'dist'
     },
+    githooks: {
+      all: {
+        'pre-push': {
+          taskNames: 'versionify',
+          template: './build/shell/addcommit.hb',
+        }
+      }
+    },
     express: {
       options: {
         port: process.env.PORT || 9000
@@ -435,7 +443,7 @@ module.exports = function (grunt) {
     },
 
     mochaTest: {
-      options: {
+      optpions: {
         reporter: 'spec'
       },
       src: ['server/**/*.spec.js']

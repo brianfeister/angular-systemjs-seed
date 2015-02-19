@@ -1,21 +1,12 @@
 /**
  * Task: versionify
- * Description: Set the heads for all themes declared in themes.json
+ * Description: Add project metadata for frontend
  */
 
 module.exports = function(grunt) {
   'use strict';
 
   var fs = require('fs');
-  var path = require('path');
-  var exec = require('child_process').exec;
-
-  function _command (cmd, cb) {
-    exec(cmd, { cwd: __dirname }, function (err, stdout, stderr) {
-      console.log('cb resolved')
-      cb(stdout.split('\n').join(''))
-    })
-  }
 
   grunt.registerTask('versionify', 'Add git hash and package.json version to main html file', function(options) {
       var git = require('git-rev-sync');
