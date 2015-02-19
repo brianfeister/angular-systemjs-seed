@@ -1,13 +1,19 @@
 'use strict';
 
 angular.module('expCoreApp')
-  .controller('MainCtrl', function ($scope, $http, socket) {
+  .controller('MainCtrl', function ($scope, $http, $mdSidenav, socket) {
     $scope.awesomeThings = [];
+
+    $scope.meta = window.expV;
 
     $http.get('/api/things').success(function(awesomeThings) {
       $scope.awesomeThings = awesomeThings;
       socket.syncUpdates('thing', $scope.awesomeThings);
     });
+
+    $scope.toggleSidenav = function(menuId) {
+      $mdSidenav(menuId).toggle();
+    };
 
     $scope.addThing = function() {
       if($scope.newThing === '') {

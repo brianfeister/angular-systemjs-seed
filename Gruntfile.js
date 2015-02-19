@@ -16,7 +16,9 @@ module.exports = function (grunt) {
     ngtemplates: 'grunt-angular-templates',
     cdnify: 'grunt-google-cdn',
     protractor: 'grunt-protractor-runner',
-    buildcontrol: 'grunt-build-control'
+    buildcontrol: 'grunt-build-control',
+    // custom task for tracking version in client facing HTML
+    versionify: 'build/grunt-tasks/versionify.js'
   });
 
   // Time how long tasks take. Can help when optimizing build times
@@ -60,13 +62,13 @@ module.exports = function (grunt) {
           '!<%= yeoman.client %>/{app,components}/**/*.spec.js',
           '!<%= yeoman.client %>/{app,components}/**/*.mock.js',
           '!<%= yeoman.client %>/app/app.js'],
-        tasks: ['injector:scripts']
+        tasks: ['injector:scripts', 'versionify']
       },
       injectCss: {
         files: [
           '<%= yeoman.client %>/{app,components}/**/*.css'
         ],
-        tasks: ['injector:css']
+        tasks: ['injector:css', 'versionify']
       },
       mochaTest: {
         files: ['server/**/*.spec.js'],
@@ -82,15 +84,15 @@ module.exports = function (grunt) {
       injectLess: {
         files: [
           '<%= yeoman.client %>/{app,components}/**/*.less'],
-        tasks: ['injector:less']
+        tasks: ['injector:less', 'versionify']
       },
       less: {
         files: [
           '<%= yeoman.client %>/{app,components}/**/*.less'],
-        tasks: ['less', 'autoprefixer']
+        tasks: ['less', 'autoprefixer', 'versionify']
       },
       gruntfile: {
-        files: ['Gruntfile.js']
+        files: ['Gruntfile.js', 'versionify']
       },
       livereload: {
         files: [
@@ -109,7 +111,7 @@ module.exports = function (grunt) {
         files: [
           'server/**/*.{js,json}'
         ],
-        tasks: ['express:dev', 'wait'],
+        tasks: ['express:dev', 'wait', 'versionify'],
         options: {
           livereload: true,
           nospawn: true //Without this option specified express won't be reloaded
