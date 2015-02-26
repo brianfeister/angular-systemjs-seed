@@ -59,10 +59,10 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'dist/**/*.js': ['coverage']
-      //'src/**/*.js': ['6to5']
+      //'client/**/*.js': ['babel']
     },
 
-    /*'6to5Preprocessor': {
+    /*'babelPreprocessor': {
       options: {
         sourceMap: 'inline',
         modules: 'system',

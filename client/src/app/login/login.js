@@ -31,6 +31,8 @@ loginModule.controller('LoginController', $scope => {
     if(!newVal) return;
 
     System.import('assets/' + newVal + '.css!').then(loaded => {
+        angular.element(document.body).removeClass('light');
+        angular.element(document.body).removeClass('dark');
         angular.element(document.body).addClass(newVal);
     });
 

@@ -1,22 +1,68 @@
 System.config({
+  "baseURL": "client",
   "paths": {
     "*": "dist/*.js",
-    "systemjs-test/*": "client/*.js",
+    "systemjs-test/*": "client/src/*.js",
     "bower_components/*": "bower_components/*.js",
     "github:*": "jspm_packages/github/*.js",
     "npm:*": "jspm_packages/npm/*.js"
+  },
+  "buildCSS": true,
+  "separateCSS": false
+});
+
+System.config({
+  "meta": {
+    "bower_components/angular/angular": {
+      "format": "global",
+      "exports": "angular"
+    },
+    "bower_components/angular-mocks/angular-mocks": {
+      "deps": [
+        "angular"
+      ]
+    },
+    "bower_components/angular-ui-router/release/angular-ui-router": {
+      "deps": [
+        "angular"
+      ]
+    },
+    "bower_components/ocLazyLoad/dist/ocLazyLoad": {
+      "deps": [
+        "angular"
+      ]
+    },
+    "bower_components/ui-router-extras/release/modular/ct-ui-router-extras.core": {
+      "format": "global",
+      "deps": [
+        "angular"
+      ]
+    },
+    "bower_components/ui-router-extras/release/modular/ct-ui-router-extras.future": {
+      "format": "global",
+      "deps": [
+        "bower_components/ui-router-extras/release/modular/ct-ui-router-extras.core"
+      ]
+    }
   }
 });
 
 System.config({
   "map": {
-    "css": "github:systemjs/plugin-css@0.1.6",
+    "angular": "bower_components/angular/angular",
+    "angular-mocks": "bower_components/angular-mocks/angular-mocks",
+    "angular-ui-router": "bower_components/angular-ui-router/release/angular-ui-router",
+    "chai": "node_modules/chai/chai",
+    "clean-css": "../node_modules/clean-css/index",
+    "css": "github:systemjs/plugin-css@0.1.5",
     "json": "github:systemjs/plugin-json@0.1.0",
+    "ocLazyLoad": "bower_components/ocLazyLoad/dist/ocLazyLoad",
+    "ui-router-extras": "bower_components/ui-router-extras/release/modular/ct-ui-router-extras.future",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
     },
     "github:jspm/nodelibs-buffer@0.1.0": {
-      "buffer": "npm:buffer@3.0.3"
+      "buffer": "npm:buffer@3.0.2"
     },
     "github:jspm/nodelibs-events@0.1.0": {
       "events-browserify": "npm:events-browserify@0.0.1"
@@ -53,10 +99,9 @@ System.config({
     "github:jspm/nodelibs-util@0.1.0": {
       "util": "npm:util@0.10.3"
     },
-    "github:systemjs/plugin-css@0.1.6": {
+    "github:systemjs/plugin-css@0.1.5": {
       "clean-css": "npm:clean-css@3.0.10",
-      "fs": "github:jspm/nodelibs-fs@0.1.1",
-      "path": "github:jspm/nodelibs-path@0.1.0"
+      "fs": "github:jspm/nodelibs-fs@0.1.1"
     },
     "npm:amdefine@0.1.0": {
       "fs": "github:jspm/nodelibs-fs@0.1.1",
@@ -67,7 +112,7 @@ System.config({
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"
     },
-    "npm:buffer@3.0.3": {
+    "npm:buffer@3.0.2": {
       "base64-js": "npm:base64-js@0.0.8",
       "ieee754": "npm:ieee754@1.1.4",
       "is-array": "npm:is-array@1.0.1"

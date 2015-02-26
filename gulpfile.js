@@ -1,7 +1,8 @@
 var gulp = require('gulp');
 var plumber = require('gulp-plumber');
-var to5 = require('gulp-6to5');
+var babel = require('gulp-babel');
 var changed = require('gulp-changed');
+var filter = require('gulp-filter');
 var browserSync = require('browser-sync');
 var jshint = require('gulp-jshint');
 var runSequence = require('run-sequence');
@@ -15,6 +16,7 @@ var htmlMin = require('gulp-minify-html');
 var builder = require('systemjs-builder');
 var RSVP = require('rsvp');
 var less = require('gulp-less');
+var autoprefixer = require('gulp-autoprefixer');
 var karma = require('karma').server;
 var insert = require('gulp-insert');
 var ngAnnotate = require('gulp-ng-annotate');
@@ -39,7 +41,6 @@ var compilerOptions = {
   sourceRoot: '',
   moduleRoot: '',
   moduleIds: false,
-  runtime: false,
   experimental: false,
   format: {
     comments: false,
@@ -54,18 +55,18 @@ var compilerOptions = {
 };
 
 var path = {
-  source:'src/**/*.js',
-  html:'**/*.html',
-  templates: 'src/**/*.html',
-  less: ['src/**/*.less', '!src/assets/**/*.less'],
-  themes: ['src/assets/dark.less', 'src/assets/light.less'],
-  themesOutput:'dist/assets/',
-  output:'dist/',
-  outputCss: 'dist/**/*.css'
+  source:'client/src/**/*.js',
+  html:'client/**/*.html',
+  templates: 'client/src/**/*.html',
+  less: ['client/src/**/*.less', '!client/src/assets/**/*.less'],
+  themes: ['client/src/assets/dark.less', 'client/src/assets/light.less'],
+  themesOutput:'client/dist/assets/',
+  output:'client/dist/',
+  outputCss: 'client/dist/**/*.css'
 };
 
 
-gulp.task('test', ['compile'], function (done) {
+gulp.task('test', ['compile-all'], function (done) {
   karma.start({
     configFile: __dirname + '/karma.conf.js',
     singleRun: true
@@ -93,8 +94,7 @@ gulp.task('html', function () {
 
     // not entirely sure this is needed....
     .pipe(insert.prepend("import angular from 'angular';\n"))
-    .pipe(to5(compilerOptions))
-
+    .pipe(babel(compilerOptions))
     .pipe(gulp.dest(path.output))
     .pipe(browserSync.reload({ stream: true }));
 });
@@ -108,8 +108,13 @@ gulp.task('less', function () {
     .pipe(less({
       plugins: [ cleancss ]
     }))
+    .pipe(autoprefixer({
+        browsers: ['last 2 versions'],
+        cascade: false
+    }))
     .pipe(sourcemaps.write("."))
     .pipe(gulp.dest(path.output))
+    .pipe(filter('**/*.css')) // prevents reloading due to .map files
     .pipe(browserSync.reload({ stream: true }));
 });
 
@@ -117,21 +122,14 @@ gulp.task('rebase-css-paths', function(callback) {
   return gulp.src(path.outputCss)
     .pipe(adjustUrls({
       replace:  [/(\.\.\/)+/,'dist/']
-    }))    
+    }))
     .pipe(gulp.dest(path.output))
 });
 
 gulp.task('move', function () {
   return gulp.src([
-      './src/**/*.json', 
-      './src/**/*.svg',
-      './src/**/*.woff',
-      './src/**/*.ttf',
-      './src/**/*.png',
-      './src/**/*.gif',
-      './src/**/*.ico',
-      './src/**/*.jpg',
-      './src/**/*.eot'])
+      './client/src/**/*.{json,svg,woff,ttf,png,gif,ico,jpg,eot}',
+      ])
     .pipe(cache('move'))
     //.pipe(changed(path.output, { extension: '.json' }))
     .pipe(gulp.dest(path.output))
@@ -139,14 +137,14 @@ gulp.task('move', function () {
 });
 
 gulp.task('json', function () {
-  return gulp.src('./src/**/*.json')
+  return gulp.src('./client/src/**/*.json')
     .pipe(changed(path.output, { extension: '.json' }))
     .pipe(gulp.dest(path.output))
     .pipe(browserSync.reload({ stream: true }));
 });
 
 gulp.task('cache-bust', function(){
-  return gulp.src('./index.html')
+  return gulp.src('./client/index.html')
     .pipe(replace({
       usePrefix: false,
       patterns: [
@@ -178,6 +176,7 @@ gulp.task('less-themes', function () {
       }))
       .pipe(sourcemaps.write("."))
       .pipe(gulp.dest(path.themesOutput))
+      .pipe(filter('**/*.css')) // prevents reloading due to .map files
       .pipe(browserSync.reload({ stream: true }));
 });
 
@@ -187,7 +186,7 @@ gulp.task('es6', function () {
     .pipe(plumber())
     .pipe(changed(path.output, { extension: '.js' }))
     .pipe(sourcemaps.init())
-    .pipe(to5(compilerOptions))
+    .pipe(babel(compilerOptions))
     .pipe(ngAnnotate({
       sourceMap: true,
       gulpWarnings: false
@@ -197,10 +196,23 @@ gulp.task('es6', function () {
     .pipe(browserSync.reload({ stream: true }));
 });
 
-
-gulp.task('compile', function (callback) {
+gulp.task('compile-all', function (callback) {
   return runSequence(
     ['less', 'less-themes', 'html', 'es6', 'move'],
+    callback
+  );
+});
+
+gulp.task('compile-other', function (callback) {
+  return runSequence(
+    ['html', 'es6', 'move'],
+    callback
+  );
+});
+
+gulp.task('compile-less', function (callback) {
+  return runSequence(
+    ['less', 'less-themes'],
     callback
   );
 });
@@ -208,7 +220,7 @@ gulp.task('compile', function (callback) {
 gulp.task('recompile', function (callback) {
   return runSequence(
     'clean',
-    ['compile'],
+    ['compile-all'],
     callback
   );
 });
@@ -224,7 +236,7 @@ gulp.task('compile-production', function(callback){
 gulp.task('minify', function(){
   var condition = '**/routing.js';
   return gulp.src([
-      'dist/**/*.js',
+      'client/dist/**/*.js',
       '!**/routing.js',
       '!**/lazy-routes.js',
       '!**/routes.js'
@@ -256,7 +268,7 @@ gulp.task('serve', ['recompile'], function (done) {
     open: false,
     port: 9000,
     server: {
-      baseDir: ['.'],
+      baseDir: ['client'],
       middleware: function (req, res, next) {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
@@ -266,27 +278,32 @@ gulp.task('serve', ['recompile'], function (done) {
 });
 
 gulp.task('watch', ['serve'], function() {
-  var watcher = gulp.watch([path.source, path.html, path.less, path.themes], ['compile']);
-  watcher.on('change', function(event) {
+  var watchOther = gulp.watch([path.source, path.html], ['compile-other']);
+  var watchLess = gulp.watch([path.less, path.themes], ['compile-less']);
+  watchOther.on('change', function(event) {
+    console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+  });
+  watchLess.on('change', function(event) {
     console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
   });
 });
 
-gulp.task('build', ['compile-production'], function () {  
-  var routes = require('./src/app/routes.json');
+gulp.task('build', ['compile-production'], function () {
+  var routes = require('./client/src/app/routes.json');
   // get the source paths of our routes
   routes = routes.map(function (r) { return r.src; });
 
   var config = {
+    // baseURL: 'client',
     main: 'app/app',
     routes: routes,
     bundleThreshold: 0.6,
-    config: './system.config.js',
+    config: './client/system.config.js',
     sourceMaps: true,
     minify: false,
     mangle: false,
-    dest: 'dist/app',
-    destJs: 'dist/app/app.js'
+    dest: 'client/dist/app',
+    destJs: 'client/dist/app/app.js'
   }
 
   return routeBundler.build(config);

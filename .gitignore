@@ -5,3 +5,6 @@ dist
 .DS_STORE
 coverage
 jspm_packages
+client/**/*.tpl.js
+client/**/*.map
+client/**/*.css

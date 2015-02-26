@@ -1,6 +1,7 @@
 {
   "name": "systemjs-test",
   "version": "1.0.0",
+  "directory" : "client",
   "ignore": [
     "node_modules",
     "bower_components"

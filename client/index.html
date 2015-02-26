@@ -15,15 +15,15 @@
     <noscript>
         <div class="deprecation-warning">
           <h1>Please enable Javascript</h1>
-          <p>Demo requires your browser to have Javascript enabled.
+          <p>This site requires your browser to have Javascript enabled.
           <a href="http://enable-javascript.com" target="_blank">Learn more</a></p>
         </div>
     </noscript>
 
     <h1>Welcome</h1>
     <a ui-sref="login" href="#">Login</a> |
-    <a ui-sref="dashboards" href="#">Dashboard</a> | 
-    <a ui-sref="forms" href="#">Forms</a> | 
+    <a ui-sref="dashboards" href="#">Dashboard</a> |
+    <a ui-sref="forms" href="#">Forms</a> |
     <a ui-sref="admin" href="#">Admin</a>
 
     <ui-view class="content-area" ></ui-view>
@@ -37,8 +37,8 @@
       System.locate = function(load) {
         var System = this;
         return Promise.resolve(systemLocate.call(this, load)).then(function(address) {
-          if(address.indexOf('bust') > -1 || 
-            address.indexOf('css') > -1 || 
+          if(address.indexOf('bust') > -1 ||
+            address.indexOf('css') > -1 ||
             address.indexOf('json') > -1) return address;
           return address + System.cacheBust;
         });
@@ -48,6 +48,9 @@
     END-->
 
     <script>
+        // this is a dirty hack because baseURL='client' is needed in system.config.js for route bundling.
+        // We override that here
+        System.config({'baseURL': ''})
         System.import('app/app');
     </script>
 </body>

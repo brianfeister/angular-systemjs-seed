@@ -6,9 +6,12 @@
     "chai": "^1.1.0",
     "del": "^1.1.1",
     "gulp": "^3.8.10",
-    "gulp-6to5": "^3.0.0",
+    "gulp-autoprefixer": "^2.1.0",
+    "gulp-babel": "^4.0.0",
+    "gulp-cached": "^1.0.2",
     "gulp-changed": "^1.1.0",
     "gulp-css-url-adjuster": "^0.2.3",
+    "gulp-filter": "^2.0.2",
     "gulp-insert": "^0.4.0",
     "gulp-jshint": "^1.9.0",
     "gulp-karma": "0.0.4",
@@ -16,37 +19,38 @@
     "gulp-minify-html": "^0.1.8",
     "gulp-ng-annotate": "^0.5.1",
     "gulp-ng-html2js": "^0.1.8",
+    "gulp-node-inspector": "0.0.2",
     "gulp-plumber": "^0.6.6",
-    "gulp-sourcemaps": "^1.3.0",
     "gulp-replace-task": "^0.1.0",
+    "gulp-sourcemaps": "^1.3.0",
     "gulp-uglify": "^1.1.0",
     "jshint-stylish": "^1.0.0",
     "karma": "^0.12.31",
-    "karma-6to5-preprocessor": "^1.0.0",
+    "karma-babel-preprocessor": "^4.0.0",
     "karma-chrome-launcher": "^0.1.7",
     "karma-coverage": "^0.2.7",
     "karma-jasmine": "^0.2.2",
     "karma-jspm": "^1.1.2",
     "less-plugin-clean-css": "^1.5.0",
     "ng-annotate": "^0.14.1",
+    "node-v8-clone": "^0.6.2",
     "object.assign": "^1.1.1",
     "rsvp": "^3.0.16",
     "run-sequence": "^1.0.2",
     "systemjs-builder": "^0.7.4",
     "systemjs-route-bundler": "^1.0.5",
-    "vinyl-paths": "^1.0.0",
-    "node-v8-clone": "^0.6.2",
-    "gulp-cached": "^1.0.2"
+    "vinyl-paths": "^1.0.0"
   },
-  "dependencies": {},
   "jspm": {
     "directories": {
-      "lib": "src"
+      "baseURL": "./client",
+      "lib": "client/jspm",
+      "packages": "client/jspm_packages"
     },
-    "configFile": "system.config.js",
+    "configFile": "client/system.config.js",
     "dependencies": {
-      "css": "^0.1.5",
-      "json": "^0.1.0"
+      "css": "github:systemjs/plugin-css@^0.1.5",
+      "json": "github:systemjs/plugin-json@^0.1.0"
     }
   },
   "scripts": {
