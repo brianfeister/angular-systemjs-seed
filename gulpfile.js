@@ -268,7 +268,7 @@ gulp.task('serve', ['recompile'], function (done) {
     open: false,
     port: 9000,
     server: {
-      baseDir: ['client'],
+      baseDir: ['client','server'],
       middleware: function (req, res, next) {
         res.setHeader('Access-Control-Allow-Origin', '*');
         next();
