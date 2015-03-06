@@ -4,6 +4,7 @@ var babel = require('gulp-babel');
 var changed = require('gulp-changed');
 var filter = require('gulp-filter');
 var browserSync = require('browser-sync');
+var historyApiFallback = require('connect-history-api-fallback');
 var jshint = require('gulp-jshint');
 var runSequence = require('run-sequence');
 var vinylPaths = require('vinyl-paths');
@@ -268,11 +269,14 @@ gulp.task('serve', ['recompile'], function (done) {
     open: false,
     port: 9000,
     server: {
-      baseDir: ['client','server'],
-      middleware: function (req, res, next) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        next();
-      }
+      baseDir: ['client'],
+      middleware: [
+        historyApiFallback,
+        function (req, res, next) {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          next();
+        }
+      ]
     }
   }, done);
 });
