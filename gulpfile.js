@@ -3,6 +3,7 @@ var plumber = require('gulp-plumber');
 var babel = require('gulp-babel');
 var changed = require('gulp-changed');
 var filter = require('gulp-filter');
+var nodemon = require('gulp-nodemon');
 var browserSync = require('browser-sync');
 var historyApiFallback = require('connect-history-api-fallback');
 var jshint = require('gulp-jshint');
@@ -28,7 +29,7 @@ var cleancss = new lessPluginCleanCSS({advanced: true});
 var cache = require('gulp-cached');
 var uglify = require('gulp-uglify');
 var adjustUrls = require('gulp-css-url-adjuster');
-var routeBundler = require('systemjs-route-bundler')
+var routeBundler = require('systemjs-route-bundler');
 
 var compilerOptions = {
   filename: '',
@@ -55,7 +56,7 @@ var compilerOptions = {
   }
 };
 
-var path = {
+var clientPath = {
   source:'client/src/**/*.js',
   html:'client/**/*.html',
   templates: 'client/src/**/*.html',
@@ -64,6 +65,10 @@ var path = {
   themesOutput:'client/dist/assets/',
   output:'client/dist/',
   outputCss: 'client/dist/**/*.css'
+};
+
+var apiPath = {
+  source:'server/**/*.js'
 };
 
 
@@ -77,15 +82,15 @@ gulp.task('test', ['compile-all'], function (done) {
 });
 
 gulp.task('clean', function() {
-  return gulp.src([path.output])
+  return gulp.src([clientPath.output])
     .pipe(vinylPaths(del));
 });
 
 gulp.task('html', function () {
-  return gulp.src(path.templates)
+  return gulp.src(clientPath.templates)
     .pipe(cache('html'))
     .pipe(plumber())
-    .pipe(changed(path.output, { extension: '.html' }))
+    .pipe(changed(clientPath.output, { extension: '.html' }))
     .pipe(htmlMin({
       empty: true,
       spare: true,
@@ -96,15 +101,15 @@ gulp.task('html', function () {
     // not entirely sure this is needed....
     .pipe(insert.prepend("import angular from 'angular';\n"))
     .pipe(babel(compilerOptions))
-    .pipe(gulp.dest(path.output))
+    .pipe(gulp.dest(clientPath.output))
     .pipe(browserSync.reload({ stream: true }));
 });
 
 gulp.task('less', function () {
-  return gulp.src(path.less)
+  return gulp.src(clientPath.less)
     .pipe(cache('less'))
     .pipe(plumber())
-    .pipe(changed(path.output, {extension: '.less'}))
+    .pipe(changed(clientPath.output, {extension: '.less'}))
     .pipe(sourcemaps.init())
     .pipe(less({
       plugins: [ cleancss ]
@@ -114,17 +119,17 @@ gulp.task('less', function () {
         cascade: false
     }))
     .pipe(sourcemaps.write("."))
-    .pipe(gulp.dest(path.output))
+    .pipe(gulp.dest(clientPath.output))
     .pipe(filter('**/*.css')) // prevents reloading due to .map files
     .pipe(browserSync.reload({ stream: true }));
 });
 
 gulp.task('rebase-css-paths', function(callback) {
-  return gulp.src(path.outputCss)
+  return gulp.src(clientPath.outputCss)
     .pipe(adjustUrls({
       replace:  [/(\.\.\/)+/,'dist/']
     }))
-    .pipe(gulp.dest(path.output))
+    .pipe(gulp.dest(clientPath.output))
 });
 
 gulp.task('move', function () {
@@ -133,14 +138,14 @@ gulp.task('move', function () {
       ])
     .pipe(cache('move'))
     //.pipe(changed(path.output, { extension: '.json' }))
-    .pipe(gulp.dest(path.output))
+    .pipe(gulp.dest(clientPath.output))
     .pipe(browserSync.reload({ stream: true }));
 });
 
 gulp.task('json', function () {
   return gulp.src('./client/src/**/*.json')
-    .pipe(changed(path.output, { extension: '.json' }))
-    .pipe(gulp.dest(path.output))
+    .pipe(changed(clientPath.output, { extension: '.json' }))
+    .pipe(gulp.dest(clientPath.output))
     .pipe(browserSync.reload({ stream: true }));
 });
 
@@ -167,25 +172,25 @@ gulp.task('cache-bust', function(){
 });
 
 gulp.task('less-themes', function () {
-    return gulp.src(path.themes)
+    return gulp.src(clientPath.themes)
       .pipe(cache('less-themes'))
       .pipe(plumber())
-      .pipe(changed(path.output, {extension: '.less'}))
+      .pipe(changed(clientPath.output, {extension: '.less'}))
       .pipe(sourcemaps.init())
       .pipe(less({
         plugins: [ cleancss ]
       }))
       .pipe(sourcemaps.write("."))
-      .pipe(gulp.dest(path.themesOutput))
+      .pipe(gulp.dest(clientPath.themesOutput))
       .pipe(filter('**/*.css')) // prevents reloading due to .map files
       .pipe(browserSync.reload({ stream: true }));
 });
 
 gulp.task('es6', function () {
-  return gulp.src(path.source)
+  return gulp.src(clientPath.source)
     .pipe(cache('es6'))
     .pipe(plumber())
-    .pipe(changed(path.output, { extension: '.js' }))
+    .pipe(changed(clientPath.output, { extension: '.js' }))
     .pipe(sourcemaps.init())
     .pipe(babel(compilerOptions))
     .pipe(ngAnnotate({
@@ -193,7 +198,7 @@ gulp.task('es6', function () {
       gulpWarnings: false
     }))
     .pipe(sourcemaps.write("."))
-    .pipe(gulp.dest(path.output))
+    .pipe(gulp.dest(clientPath.output))
     .pipe(browserSync.reload({ stream: true }));
 });
 
@@ -247,7 +252,7 @@ gulp.task('minify', function(){
       {mangle: false}
     ))
     .pipe(sourcemaps.write("."))
-    .pipe(gulp.dest(path.output))
+    .pipe(gulp.dest(clientPath.output))
 });
 
 gulp.task('release', function(callback) {
@@ -258,13 +263,15 @@ gulp.task('release', function(callback) {
   );
 });
 
-gulp.task('lint', function() {
-  return gulp.src(path.source)
+gulp.task('lint-ui', function() {
+  var settings = { fail: false };
+
+  return gulp.src(clientPath.source)
     .pipe(jshint())
-    .pipe(jshint.reporter(stylish));
+    .pipe(jshint.reporter(stylish, settings));
 });
 
-gulp.task('serve', ['recompile'], function (done) {
+gulp.task('serve', ['lint-ui','recompile', 'api'], function (done) {
   browserSync({
     open: false,
     port: 9000,
@@ -281,9 +288,23 @@ gulp.task('serve', ['recompile'], function (done) {
   }, done);
 });
 
+gulp.task('lint-api', function () {
+  return gulp.src(apiPath.source)
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish));
+});
+
+gulp.task('api', function () {
+  nodemon({ script: 'server/app.js', ext: 'html js', ignore: ['ignored.js'] })
+    .on('change', ['lint-api'])
+    .on('restart', function () {
+      console.log('restarted!')
+    })
+})
+
 gulp.task('watch', ['serve'], function() {
-  var watchOther = gulp.watch([path.source, path.html], ['compile-other']);
-  var watchLess = gulp.watch([path.less, path.themes], ['compile-less']);
+  var watchOther = gulp.watch([clientPath.source, clientPath.html], ['compile-other']);
+  var watchLess = gulp.watch([clientPath.less, clientPath.themes], ['compile-less']);
   watchOther.on('change', function(event) {
     console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
   });
