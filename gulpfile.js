@@ -274,7 +274,7 @@ gulp.task('lint-ui', function() {
 gulp.task('serve', ['lint-ui','recompile', 'api'], function (done) {
   browserSync({
     open: false,
-    port: 9000,
+    port: 8000,
     server: {
       baseDir: ['client'],
       middleware: [

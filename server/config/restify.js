@@ -51,18 +51,21 @@ module.exports = function(api) {
     api.use(favicon(path.join(config.root, 'public', 'favicon.ico')));
     // api.use(express.static(path.join(config.root, 'public')));
     // api.set('appPath', path.join(config.root, 'public'));
+
+    // Serve static assets only in production, where browserSync is not used
+    api.get(/.*/, restify.serveStatic({
+      'directory': 'client',
+      'default': 'index.html'
+    }));
+
     api.use(morgan('dev'));
   }
 
   if ('development' === env || 'test' === env) {
     // api.use(favicon(path.join(config.root, 'client', 'favicon.ico')));
     // @TODO remove this if we decide not to use
-    api.get(/.*/, restify.serveStatic({
-      'directory': 'client',
-      'default': 'index.html'
-    }));
 
-    api.use(require('connect-livereload')()); // @TODO make this work
+    // api.use(require('connect-livereload')()); // @TODO make this work
     // @TODO use these for serving compiled LESS from .tmp directory in dev
     // api.get(/.tmp/, restify.serveStatic({'directory': '.tmp' }));
     // api.get(/client/, restify.serveStatic({'directory': 'client' }));
