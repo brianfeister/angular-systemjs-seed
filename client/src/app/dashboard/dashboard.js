@@ -4,7 +4,7 @@ import {popupModule} from 'common/components/popup';
 import {timeModule} from 'common/components/time';
 import './dashboards.tpl';
 
-export var dashboardModule = angular.module('dashboard', 
+export var dashboardModule = angular.module('dashboard',
 	[modalModule.name, popupModule.name, timeModule.name, 'app/dashboard/dashboards.tpl.html']);
 
 dashboardModule.config(function($stateProvider){
@@ -16,5 +16,6 @@ dashboardModule.config(function($stateProvider){
 });
 
 dashboardModule.controller('DashboardCtrl', $scope => {
+  $scope = $scope;
 	console.log('dashboard!');
 });

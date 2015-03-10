@@ -11,7 +11,8 @@ define(['angular', 'common/components/modal', './forms.tpl'], function(angular){
   });
 
   formModule.controller('FormsCtrl', $scope => {
-      console.log('forms!');
+    $scope = $scope;
+    console.log('forms!');
   });
 
   return formModule;

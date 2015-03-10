@@ -18,7 +18,6 @@
     "camelcase"     : false,
     "trailing"      : true,
     "indent"        : 2,
-    "maxlen"        : 120,
     "maxdepth"      : 4,
     "maxstatements" : 30,
     "maxcomplexity" : 5,
