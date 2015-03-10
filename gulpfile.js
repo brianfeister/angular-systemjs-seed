@@ -30,6 +30,8 @@ var cache = require('gulp-cached');
 var uglify = require('gulp-uglify');
 var adjustUrls = require('gulp-css-url-adjuster');
 var routeBundler = require('systemjs-route-bundler');
+var argv = require('yargs').argv;
+var gulpif = require('gulp-if');
 
 var compilerOptions = {
   filename: '',
@@ -264,8 +266,7 @@ gulp.task('release', function(callback) {
 });
 
 gulp.task('lint-ui', function() {
-  var settings = { fail: false };
-
+  var settings = { fail: argv.production ? true : false };
   return gulp.src(clientPath.source)
     .pipe(jshint())
     .pipe(jshint.reporter(stylish, settings));
@@ -289,9 +290,10 @@ gulp.task('serve', ['lint-ui','recompile', 'api'], function (done) {
 });
 
 gulp.task('lint-api', function () {
+  var settings = { fail: argv.production ? true : false };
   return gulp.src(apiPath.source)
     .pipe(jshint())
-    .pipe(jshint.reporter(stylish));
+    .pipe(jshint.reporter(stylish, settings));
 });
 
 gulp.task('api', function () {
@@ -299,8 +301,8 @@ gulp.task('api', function () {
     .on('change', ['lint-api'])
     .on('restart', function () {
       console.log('restarted!')
-    })
-})
+    });
+});
 
 gulp.task('watch', ['serve'], function() {
   var watchOther = gulp.watch([clientPath.source, clientPath.html], ['compile-other']);
